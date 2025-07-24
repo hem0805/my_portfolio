@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hemnath</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --main-bg: #14181c;
+      --hero-overlay: linear-gradient(90deg, rgba(20,24,28,0.93) 30%, rgba(25,29,39,0.75) 80%);
+      --accent: #e50914;
+      --secondary: #5397ff;
+      --white: #f4f4f4;
+      --subtle: #95a5c8;
+    }
+    * {box-sizing: border-box;}
+    html, body {margin:0; padding:0; background:var(--main-bg); color:var(--white); font-family: 'Montserrat', Arial, sans-serif;}
+    body {min-height: 100vh;}
+    a {color: var(--accent); text-decoration:none;}
+    a:hover {text-decoration: underline;}
+    /* NAVIGATION */
+    .navbar {
+      position: sticky; top:0; left:0;
+      background: rgba(15,16,18, 0.95);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 4vw;
+      z-index: 100;
+      box-shadow: 0 2px 32px #06070844;
+    }
+    .navbar-logo {
+      font-weight: 900;
+      font-size: 1.7rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-shadow: 0 0 1px #fff2;
+    }
+    .navbar-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .navbar-link {
+      color: var(--white);
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: color 0.14s;
+      letter-spacing: 0.5px;
+      position: relative;
+    }
+    .navbar-link.active, .navbar-link:hover {
+      color: var(--accent);
+    }
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 45vh;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover;
+      display: flex; flex-direction:column; justify-content:center; align-items:flex-start;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset:0;
+      background: var(--hero-overlay);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 4rem 0 2rem 8vw;
+      max-width: 810px;
+    }
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0 0 0.8rem 0;
+      letter-spacing: 1.5px;
+      color: var(--white);
+    }
+    .hero-subtitle {
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-bottom: 0.8rem;
+      color: var(--subtle);
+    }
+    .hero-social a { color:var(--accent); margin-right:1.35rem; font-size:1.4rem;}
+    .hero-social a:hover {color:var(--secondary);}
+    .hero-btns a {
+      background: var(--accent); color: var(--white);
+      font-weight: 700; border-radius: 1.2rem; padding: 0.6rem 2.1rem; margin-right: 1.3rem;
+      box-shadow: 0 1px 7px #e5091239;
+      text-decoration: none; font-size: 1.09rem;
+      transition: background 0.16s;
+    }
+    .hero-btns a:hover { background: var(--secondary); color:#fff;}
+    /* SECTION HEADER */
+    .section-header { font-size:2rem; font-weight:800; margin:2.7rem 0 1.2rem 1vw; color:var(--accent);}
+    /* PROJECT CAROUSEL */
+    .carousel-container {
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 1rem 0rem 2rem 1vw;
+      margin-bottom: 1.5rem;
+      display: flex; gap: 2rem;
+      scroll-snap-type: x mandatory;
+    }
+    .project-card {
+      min-width: 320px; max-width: 320px;
+      background: #202830;
+      color: var(--white);
+      border-radius: 11px;
+      box-shadow: 0 2px 22px #191c2040;
+      padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+      scroll-snap-align: start;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.16s;
+      border: 2px solid transparent;
+    }
+    .project-card:hover {
+      box-shadow: 0 8px 44px #e5091222;
+      border:2px solid var(--accent);
+      transform: translateY(-6px) scale(1.035);
+    }
+    .project-title {
+      color: var(--accent);
+      font-size: 1.27rem;
+      font-weight:700;
+      margin-bottom:0.8rem;
+    }
+    .project-tags .tag {
+      background: var(--secondary); color: var(--white); font-size:0.85rem; border-radius:5px; margin-right:.35em; padding:0.06em 0.65em; display:inline-block;
+    }
+    .project-summary { color: var(--subtle); margin-bottom:0.7rem;}
+    /* Modal Overlay */
+    .modal-bg {
+      display: none; position: fixed; top:0; left:0; width:100vw; height:100vh;
+      justify-content: center; align-items: center;
+      background: rgba(14, 19, 25, 0.89); z-index:200;
+    }
+    .modal-content {
+      background: #1c2228; color: var(--white); padding: 2.1rem 2.2rem 2.2rem;
+      border-radius: 13px; max-width: 460px; min-width:300px; box-shadow: 0 0 120px #060b114a, 0 0 8px #202430;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute; right:1rem; top:1rem; font-size:1.2rem; cursor:pointer; color:var(--subtle);
+      transition: color 0.16s;
+    }
+    .close-modal:hover { color:var(--accent);}
+    /* About/Skills */
+    .about-section, .skills-section, .testimonials-section, .contact-section {
+      margin:2.5rem 0 2.2rem 0; padding-left:1vw; padding-right:1vw; max-width: 810px;
+    }
+    .about-p {
+      font-size: 1.12rem; color: var(--subtle); margin-bottom:1.1rem; line-height:1.5;
+    }
+    .skills-list { display: flex; flex-wrap: wrap; gap:1.5rem 2.5rem; margin-top:0.7rem;}
+    .skill-badge {
+      font-size:1.06rem; background: #223244;
+      color: var(--secondary);
+      padding:0.44em 1.2em; border-radius: 2rem; font-weight:500; margin-bottom:0.3em;
+      box-shadow: 0 2px 5px #27446513;
+    }
+    /* Testimonials carousel */
+    .testimonial-card {
+      background: #1d2431; color: var(--white); border-radius: 9px; padding: 1.24rem 1.4rem; margin:0 auto; max-width:680px;
+      box-shadow: 0 2px 28px #0d10148b;
+    }
+    .testimonial-author {margin-top:0.85em; font-size:1.02rem; color: var(--secondary);}
+    .carousel-testimonial-nav {
+      text-align: center; margin:0.5em 0 0.6em 0;
+    }
+    .carousel-btn {
+      background: transparent; border: none; color: var(--accent); font-size: 1.65rem; margin:0 .4em; cursor:pointer;
+      transition: color 0.17s;
+    }
+    .carousel-btn:focus {outline: none;}
+    .carousel-btn:hover { color: var(--secondary);}
+    /* Contact */
+    .contact-form { max-width:540px;}
+    .contact-form input, .contact-form textarea {
+      display: block; width:100%; margin-bottom: 1rem;
+      padding:0.7em 1.1em; font-size:1.06rem; border-radius:9px;
+      border:none; background: #232c39; color:var(--white);
+      box-shadow: 0 1px 7px #0001;
+      transition: background 0.13s, color 0.13s;
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      background: #242b36; color: var(--white); outline:2px solid var(--secondary);
+    }
+    .contact-btn, .resume-btn {
+      background: var(--accent); color: #fff;
+      font-weight: 700; border-radius: 1.1rem; padding: 0.57rem 2.2rem; margin-right: 1.2rem;
+      text-decoration: none; font-size:1.07rem; border:none; transition: background 0.15s;
+    }
+    .contact-btn:hover, .resume-btn:hover { background: var(--secondary);}
+    @media (max-width: 700px) {
+      .hero-content {padding:2.5rem 6vw;}
+      .carousel-container {gap: 1.15rem;}
+      .project-card {min-width:90vw;max-width:96vw;}
+      .about-section, .skills-section, .testimonials-section, .contact-section {padding: 0 2vw;}
+      .section-header {margin:2.3rem 0 1rem 3vw;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-logo">HEMNATH<span style="color:var(--secondary)"></span></div>
+    <div class="navbar-links">
+      <a class="navbar-link active" href="#home">Home</a>
+      <a class="navbar-link" href="#projects">Projects</a>
+      <a class="navbar-link" href="#skills">Skills</a>
+      <a class="navbar-link" href="#about">About</a>
+      <a class="navbar-link" href="#testimonials">Testimonials</a>
+      <a class="navbar-link" href="#contact">Contact</a>
+    </div>
+  </nav>
+  <!-- Hero / Banner -->
+  <header class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-title">Hi, I'm Hemnath</div>
+      <div class="hero-subtitle">AI Engineer & Modern Problem Solver</div>
+      <div style="margin-bottom:1.2em;color:var(--white);font-size:1.19rem;">
+        <span class="typing-effect" style="color:var(--accent)"></span>
+      </div>
+      <div class="hero-social" style="margin-bottom:2vh;">
+        <a href="mailto:hemnath0805@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+        <a href="https://linkedin.com/in/hemnath-n" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="https://github.com/" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+      </div>
+      <div class="hero-btns">
+        <a href="#projects">View Projects</a>
+        <a href="resume.pdf" download class="resume-btn"><i class="fas fa-download me-1"></i>Resume</a>
+      </div>
+    </div>
+  </header>
+  <!-- Projects carousel (Netflix style) -->
+  <div class="section-header" id="projects">Projects</div>
+  <div class="carousel-container" style="margin-bottom:1.5rem;">
+    <div class="project-card" onclick="showModal(0)">
+      <div class="project-title">Multimodal Depression Detection</div>
+      <div class="project-summary">
+        ML fusion of text, audio, and video for earlier, more accurate mental health screening.
+      </div>
+      <div class="project-tags">
+        <span class="tag">AI for Good</span>
+        <span class="tag">Healthcare</span>
+      </div>
+    </div>
+    <div class="project-card" onclick="showModal(1)">
+      <div class="project-title">Human Activity Recognition</div>
+      <div class="project-summary">
+        Multi-sensor CNN + vision for real-time action detection in smart spaces.
+      </div>
+      <div class="project-tags">
+        <span class="tag">Computer Vision</span>
+        <span class="tag">IoT</span>
+      </div>
+    </div>
+    <div class="project-card" onclick="showModal(2)">
+      <div class="project-title">AI Skincare Advisor</div>
+      <div class="project-summary">
+        Streamlit app using MobileNetV2 for personalized, photo-based routines.
+      </div>
+      <div class="project-tags">
+        <span class="tag">GenAI</span>
+        <span class="tag">Healthcare</span>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal-content" id="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body" style="margin-top:1.1em;"></div>
+    </div>
+  </div>
+  <!-- Skills -->
+  <div class="section-header" id="skills">Skills</div>
+  <section class="skills-section">
+    <div class="skills-list">
+      <span class="skill-badge">Python</span>
+      <span class="skill-badge">Deep Learning</span>
+      <span class="skill-badge">NLP</span>
+      <span class="skill-badge">Computer Vision</span>
+      <span class="skill-badge">Streamlit</span>
+      <span class="skill-badge">FastAPI</span>
+      <span class="skill-badge">PyTorch</span>
+      <span class="skill-badge">TensorFlow</span>
+      <span class="skill-badge">Scikit-learn</span>
+      <span class="skill-badge">SQL</span>
+      <span class="skill-badge">Data Analysis</span>
+      <span class="skill-badge">Visualization</span>
+    </div>
+  </section>
+  <!-- About -->
+  <div class="section-header" id="about">About</div>
+  <section class="about-section">
+    <div class="about-p">
+      I'm Hemnath, an AI engineer passionate about building systems that blend intelligence with empathy.<br>
+      My focus is on <b>applied deep learning, NLP, and computer vision</b> to solve practical challenges—especially in health and wellbeing. I thrive on learning, collaborating, and transforming innovative research into beautiful, usable tech for real people.
+    </div>
+    <div class="about-p" style="font-size:1.07rem; color:#b8c3df;">
+      <b>Mission:</b> Use AI to simplify life, not complicate it.<br/>
+      <b>Philosophy:</b> Every solution starts with a simple "How can I help?"
+    </div>
+  </section>
+  <!-- Testimonials -->
+  <div class="section-header" id="testimonials">Testimonials</div>
+  <section class="testimonials-section">
+    <div class="carousel-testimonial-nav">
+      <button class="carousel-btn" onclick="showTestimonial(-1)" aria-label="Previous">&#8592;</button>
+      <button class="carousel-btn" onclick="showTestimonial(1)" aria-label="Next">&#8594;</button>
+    </div>
+    <div id="testimonial-slide" class="testimonial-card">
+      &ldquo;Working with Hemnath is a joy. His technical talent goes hand-in-hand with humility and grace.&rdquo;<br>
+      <div class="testimonial-author">R. Krishnan (Lead, RBG.AI)</div>
+    </div>
+  </section>
+  <!-- Contact -->
+  <div class="section-header" id="contact">Contact</div>
+  <section class="contact-section">
+    <form class="contact-form"
+      onsubmit="event.preventDefault(); alert('Thank you for reaching out! Hemnath will respond soon.'); this.reset();">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea rows="4" placeholder="Type your message..." required></textarea>
+      <button type="submit" class="contact-btn"><i class="fas fa-paper-plane me-1"></i>Send Message</button>
+      <a href="resume.pdf" class="contact-btn" download style="background:var(--secondary);"><i class="fas fa-download"></i> Resume</a>
+    </form>
+    <div style="margin-top:1em;color:var(--subtle);font-size:1.05em;">
+      Or email directly at <a href="mailto:hemnath0805@gmail.com" style="color:var(--accent)">hemnath0805@gmail.com</a>
+    </div>
+  </section>
+  <!-- Scripts for modals and carousels -->
+  <script>
+    // Navbar link highlighting + smooth scroll
+    document.querySelectorAll('.navbar-link').forEach(link=>{
+      link.addEventListener('click',function(e){
+        e.preventDefault();
+        document.querySelectorAll('.navbar-link').forEach(l=>l.classList.remove('active'));
+        this.classList.add('active');
+        document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+
+    // Animated typing effect for hero
+    const phrases = ["Making AI human.", "Building empathetic solutions.", "From idea to impact.", "Chasing better, not just bigger."];
+    let phr = 0, i = 0, typingOut = true;
+    function typingEffect() {
+      let el = document.querySelector('.typing-effect');
+      if (!el) return;
+      if(typingOut) {
+        if(i<=phrases[phr].length) {
+          el.innerHTML = phrases[phr].substr(0,i) + '<span style="opacity:0.2">|</span>';
+          i++; setTimeout(typingEffect, 54 + Math.random()*45);
+        } else {
+          typingOut = false; setTimeout(typingEffect, 1250);
+        }
+      } else {
+        if(i>=0) {
+          el.innerHTML = phrases[phr].substr(0,i) + '<span style="opacity:0.2">|</span>';
+          i--; setTimeout(typingEffect, 22+Math.random()*34);
+        } else {
+          typingOut = true; phr=(phr+1)%phrases.length; setTimeout(typingEffect, 350);
+        }
+      }
+    }
+    typingEffect();
+
+    // Modal logic for projects
+    const projDetails = [
+      {
+        title: "Multimodal Depression Detection",
+        body: `<p>Built an AI system that blends <b>text, voice, and facial cues</b> using deep learning, to assist mental health professionals in identifying early warning signs for depression. Technology with human care at its core.</p>
+              <ul><li>Fusion of audio, text, and image signal processing</li>
+                  <li>Improved sensitivity for subtle emotional markers</li>
+                  <li>Potential for ethical early screening</li></ul>`
+      },
+      {
+        title: "Human Activity Recognition",
+        body: `<p>Created a robust, multi-sensor <b>deep CNN</b> pipeline, used for real-time detection of everyday actions in smart environments. Applications in safety, elderly care, and automation.</p>
+               <ul><li>Sensor fusion (IMU, visual)</li>
+                   <li>Pipeline optimized for edge devices</li>
+                   <li>Deployed in prototype IoT workspace</li></ul>`
+      },
+      {
+        title: "AI Skincare Advisor",
+        body: `<p>Developed an interactive, user-friendly app (Streamlit, MobileNetV2, LLM) where users upload selfies and get instant, personalized skincare guidance. AI meets daily wellbeing!</p>
+              <ul><li>MobileNetV2 facial/skin analysis</li>
+                  <li>Conversational LLM-based advice generation</li>
+                  <li>Simple, privacy-conscious UX</li></ul>`
+      }
+    ];
+    function showModal(idx) {
+      document.getElementById('modal-title').textContent = projDetails[idx].title;
+      document.getElementById('modal-body').innerHTML = projDetails[idx].body;
+      document.getElementById('modal-bg').style.display = 'flex';
+    }
+    function closeModal() { document.getElementById('modal-bg').style.display = 'none'; }
+    window.addEventListener('keydown', e => { if(e.key === "Escape") closeModal(); });
+
+    // Testimonials carousel
+    const testimonials = [
+      {
+        text: '&ldquo;Working with Hemnath is a joy. His technical talent goes hand-in-hand with humility and grace.&rdquo;',
+        author: 'R. Krishnan (Lead, RBG.AI)'
+      },
+      {
+        text: '&ldquo;Hemnath makes hard problems feel easy—and mentors others to do the same.&rdquo;',
+        author: 'Sara D. (HealthEdge)'
+      },
+      {
+        text: '&ldquo;A thoughtful collaborator who always puts empathy first in engineering.&rdquo;',
+        author: 'Vinayak S. (Colleague)'
+      }
+    ];
+    let testiIdx = 0;
+    function showTestimonial(delta) {
+      testiIdx = (testiIdx+delta+testimonials.length)%testimonials.length;
+      let el = document.getElementById('testimonial-slide');
+      el.style.opacity = 0.18;
+      setTimeout(() => {
+        el.innerHTML = testimonials[testiIdx].text + "<br><div class='testimonial-author'>" + testimonials[testiIdx].author + "</div>";
+        el.style.opacity = 1;
+      }, 220);
+    }
+  </script>
+</body>
+</html>
